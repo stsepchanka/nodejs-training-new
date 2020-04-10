@@ -24,4 +24,4 @@ const logError = (err, req, res, next) => {
   next(err);
 };
 
-module.exports = { logRequest, logError };
+module.exports = { logRequest, logError, logger };
