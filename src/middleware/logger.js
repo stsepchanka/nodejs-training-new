@@ -5,9 +5,21 @@ const requestFormat = format.printf(({ timestamp, level, message }) => {
 });
 
 const logger = createLogger({
-  level: 'info',
+  level: 'silly',
   format: format.combine(format.colorize(), format.timestamp(), requestFormat),
-  transports: [new transports.Console()]
+  transports: [
+    new transports.Console(),
+    new transports.File({
+      filename: 'error.log',
+      level: 'error',
+      format: format.combine(format.uncolorize(), format.json())
+    }),
+    new transports.File({
+      filename: 'info.log',
+      level: 'info',
+      format: format.combine(format.uncolorize(), format.json())
+    })
+  ]
 });
 
 const logRequest = (req, res, next) => {
