@@ -1,11 +1,7 @@
-const HttpStatus = require('http-status-codes');
+const { ValidationError } = require('./../errors/validation.error');
 
-function errorResponse(schemaErrors) {
-  const errors = schemaErrors.map(({ path, message }) => ({ path, message }));
-  return {
-    status: 'failed',
-    errors
-  };
+function details(schemaErrors) {
+  return schemaErrors.map(({ path, message }) => ({ path, message }));
 }
 
 function validateSchema(schema) {
@@ -16,9 +12,7 @@ function validateSchema(schema) {
     });
 
     if (error && error.isJoi) {
-      return res
-        .status(HttpStatus.BAD_REQUEST)
-        .json(errorResponse(error.details));
+      return next(new ValidationError('Invalid data', details(error.details)));
     }
     next();
   };
