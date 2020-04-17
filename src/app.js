@@ -2,7 +2,7 @@ const express = require('express');
 const swaggerUI = require('swagger-ui-express');
 const path = require('path');
 const YAML = require('yamljs');
-const { logRequest, logError, logger } = require('./middleware/logger');
+const { logRequest, logError } = require('./middleware/logging');
 const { errorHandler } = require('./middleware/error_handler');
 const { catchUnhandledError } = require('./middleware/catch_unhandled_error');
 const userRouter = require('./resources/users/user.router');
@@ -11,15 +11,6 @@ const taskRouter = require('./resources/tasks/task.router');
 
 const app = express();
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
-
-process.on('uncaughtException', error => {
-  logger.error(`captured error: ${error.message}`);
-  process.exitCode = 1;
-});
-
-process.on('unhandledRejection', reason => {
-  logger.info(`Unhandled rejection detected: ${reason.message}`);
-});
 
 app.use(express.json());
 
