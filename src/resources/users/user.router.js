@@ -1,6 +1,6 @@
 const HttpStatus = require('http-status-codes');
 const router = require('express').Router();
-const User = require('./user.model');
+const User = require('./user.db.model');
 const usersService = require('./user.service');
 const userSchema = require('./user.schema');
 const validateSchema = require('./../../middleware/validate_schema');
