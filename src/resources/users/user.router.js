@@ -7,10 +7,13 @@ const validateSchema = require('./../../middleware/validate_schema');
 const { ValidationError } = require('./../../errors/validation.error');
 const { NotFoundError } = require('./../../errors/not_found.error');
 
-router.route('/').get(async (req, res) => {
-  const users = await usersService.getAll();
-  // map user fields to exclude secret fields like "password"
-  res.json(users.map(User.toResponse));
+router.route('/').get(async (req, res, next) => {
+  try {
+    const users = await usersService.getAll();
+    res.json(users.map(User.toResponse));
+  } catch (err) {
+    return next(new Error(err));
+  }
 });
 
 router.route('/:id').get(async (req, res, next) => {

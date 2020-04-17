@@ -1,16 +1,13 @@
-const usersRepo = require('./user.memory.repository');
+const usersRepo = require('./user.db.repository');
 const boardsRepo = require('./../boards/board.memory.repository');
 const tasksRepo = require('./../tasks/task.memory.repository');
-const User = require('./user.model');
 
 const getAll = () => usersRepo.getAll();
 
 const getById = id => usersRepo.getById(id);
 
-const addOne = async data => {
-  const user = new User(data);
-  await usersRepo.addOne(user);
-  return user;
+const addOne = async user => {
+  return await usersRepo.addOne(user);
 };
 
 const updateOne = (id, user) => usersRepo.updateOne(id, user);
