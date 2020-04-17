@@ -4,9 +4,7 @@ const getAll = boardId => tasksRepo.getAll(boardId);
 
 const getById = (boardId, id) => tasksRepo.getById(boardId, id);
 
-const addOne = async (boardId, data) => {
-  return await tasksRepo.addOne({ ...data, boardId });
-};
+const addOne = (boardId, data) => tasksRepo.addOne({ ...data, boardId });
 
 const updateOne = (boardId, id, task) => tasksRepo.updateOne(boardId, id, task);
 

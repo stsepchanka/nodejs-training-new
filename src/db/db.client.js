@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { MONGO_CONNECTION_STRING } = require('./../common/config');
 const { logger } = require('./../common/logger');
 
-const { usersData, taskData } = require('./db.data');
+const { usersData, taskData, boardData } = require('./db.data');
 
 const connectToDB = cb => {
   mongoose.connect(MONGO_CONNECTION_STRING, {
@@ -17,10 +17,14 @@ const connectToDB = cb => {
 
   db.once('open', () => {
     logger.info('connected to database');
+
     db.dropCollection('users');
     usersData.map(user => user.save());
     db.dropCollection('tasks');
     taskData.map(task => task.save());
+    db.dropCollection('boards');
+    boardData.map(board => board.save());
+
     cb();
   });
 };
