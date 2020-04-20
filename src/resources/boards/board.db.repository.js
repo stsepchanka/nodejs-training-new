@@ -17,7 +17,7 @@ const updateOne = async (id, board) => {
 };
 
 const deleteById = async id => {
-  return Board.deleteOne({ _id: id }).exec().deletedCount;
+  return (await Board.deleteOne({ _id: id })).deletedCount;
 };
 
 module.exports = { getAll, getById, addOne, updateOne, deleteById };

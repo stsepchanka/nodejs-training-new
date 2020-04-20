@@ -4,7 +4,6 @@ const Task = require('./task.db.model');
 const tasksService = require('./task.service');
 const taskSchema = require('./task.schema');
 const validateSchema = require('../../middleware/validate_schema');
-const { ValidationError } = require('./../../errors/validation.error');
 const { NotFoundError } = require('./../../errors/not_found.error');
 
 router.route('/').get(async (req, res, next) => {
@@ -12,16 +11,20 @@ router.route('/').get(async (req, res, next) => {
     const tasks = await tasksService.getAll(req.params.boardId);
     res.json(tasks.map(Task.toResponse));
   } catch (err) {
-    return next(new Error(err));
+    return next(err);
   }
 });
 
 router.route('/:id').get(async (req, res, next) => {
   try {
     const task = await tasksService.getById(req.params.boardId, req.params.id);
-    res.json(Task.toResponse(task));
+    if (task) {
+      res.json(Task.toResponse(task));
+    } else {
+      throw new NotFoundError('Task is not found');
+    }
   } catch (err) {
-    return next(new NotFoundError(err.message));
+    return next(err);
   }
 });
 
@@ -30,7 +33,7 @@ router.route('/').post(validateSchema(taskSchema), async (req, res, next) => {
     const task = await tasksService.addOne(req.params.boardId, req.body);
     res.json(Task.toResponse(task));
   } catch (err) {
-    return next(new ValidationError(err.message));
+    return next(err);
   }
 });
 
@@ -41,18 +44,29 @@ router.route('/:id').put(validateSchema(taskSchema), async (req, res, next) => {
       req.params.id,
       req.body
     );
-    res.json(Task.toResponse(task));
+    if (task) {
+      res.json(Task.toResponse(task));
+    } else {
+      throw new NotFoundError('Task is not found');
+    }
   } catch (err) {
-    return next(new NotFoundError(err.message));
+    return next(err);
   }
 });
 
 router.route('/:id').delete(async (req, res, next) => {
   try {
-    await tasksService.deleteById(req.params.boardId, req.params.id);
-    res.json(HttpStatus.NO_CONTENT);
+    const deletedCount = await tasksService.deleteById(
+      req.params.boardId,
+      req.params.id
+    );
+    if (deletedCount) {
+      res.json(HttpStatus.NO_CONTENT);
+    } else {
+      throw new NotFoundError('Task is not found');
+    }
   } catch (err) {
-    return next(new NotFoundError(err.message));
+    return next(err);
   }
 });
 
