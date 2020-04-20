@@ -17,7 +17,7 @@ const updateOne = async (boardId, id, task) => {
 };
 
 const deleteById = async (boardId, id) => {
-  return Task.deleteOne({ boardId, _id: id }).exec().deletedCount;
+  return (await Task.deleteOne({ boardId, _id: id })).deletedCount;
 };
 
 const getTasksByUser = async userId => {
