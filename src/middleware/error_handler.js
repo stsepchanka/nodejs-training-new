@@ -1,12 +1,14 @@
 const { ValidationError } = require('./../errors/validation.error');
 const { NotFoundError } = require('./../errors/not_found.error');
+const { UnauthorizedError } = require('./../errors/unauthorized.error');
+const { ForbiddenError } = require('./../errors/forbidden.error');
 
 const handleValidationError = (err, req, res, next) =>
   err.details
     ? res.status(err.status).json(err.details)
     : res.status(err.status).send(err.text);
 
-const handleNotFoundError = (err, req, res, next) =>
+const handleError = (err, req, res, next) =>
   res.status(err.status).send(err.text);
 
 const errorHandler = (err, req, res, next) => {
@@ -14,7 +16,13 @@ const errorHandler = (err, req, res, next) => {
     handleValidationError(err, req, res, next);
     return;
   } else if (err instanceof NotFoundError) {
-    handleNotFoundError(err, req, res, next);
+    handleError(err, req, res, next);
+    return;
+  } else if (err instanceof UnauthorizedError) {
+    handleError(err, req, res, next);
+    return;
+  } else if (err instanceof ForbiddenError) {
+    handleError(err, req, res, next);
     return;
   }
   next(err);
