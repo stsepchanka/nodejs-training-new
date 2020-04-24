@@ -1,3 +1,4 @@
+const encryptor = require('./../../common/encryptor');
 const usersRepo = require('./user.db.repository');
 const tasksRepo = require('./../tasks/task.db.repository');
 
@@ -5,7 +6,11 @@ const getAll = () => usersRepo.getAll();
 
 const getById = id => usersRepo.getById(id);
 
-const addOne = user => usersRepo.addOne(user);
+const addOne = async data => {
+  const password = await encryptor.encrypt(data.password);
+  const user = { ...data, password };
+  return usersRepo.addOne(user);
+};
 
 const updateOne = (id, user) => usersRepo.updateOne(id, user);
 
@@ -28,4 +33,20 @@ const deleteById = async id => {
   return deletedCount;
 };
 
-module.exports = { getAll, getById, addOne, updateOne, deleteById };
+const getByLoginAndPassword = async (login, password) => {
+  const user = await usersRepo.getByLogin(login);
+  const ok = user && (await encryptor.compare(password, user.password));
+  if (ok) {
+    return user;
+  }
+  return null;
+};
+
+module.exports = {
+  getAll,
+  getById,
+  addOne,
+  updateOne,
+  deleteById,
+  getByLoginAndPassword
+};
